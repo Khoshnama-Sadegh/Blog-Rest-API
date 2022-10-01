@@ -3,10 +3,14 @@ package com.sadegh.blogrestapi.service.impl;
 import com.sadegh.blogrestapi.entity.Post;
 import com.sadegh.blogrestapi.exception.ResourceNotFoundException;
 import com.sadegh.blogrestapi.payload.PostDto;
+import com.sadegh.blogrestapi.payload.PostResponse;
 import com.sadegh.blogrestapi.repository.PostRepository;
 import com.sadegh.blogrestapi.service.PostService;
 import javafx.geometry.Pos;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,11 +42,28 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getAllPosts() {
-        List<Post> posts= postRepository.findAll();
-        List<PostDto> postDtos= posts.stream().map(post -> toDto(post)).collect(Collectors.toList());
+    public PostResponse getAllPosts(int pageNo,int pageSize) {
+        //create  Pageable instance
 
-        return postDtos;
+        Pageable pageable= PageRequest.of(pageNo,pageSize);
+
+        Page<Post> posts= postRepository.findAll(pageable);
+
+        List<Post> listOfPosts=posts.getContent();
+
+        List<PostDto> postDtos= listOfPosts.stream().map(post -> toDto(post)).collect(Collectors.toList());
+
+        PostResponse postResponse=new PostResponse();
+        postResponse.setContent(postDtos);
+        postResponse.setPageNo(posts.getNumber());
+        postResponse.setPageSize(posts.getSize());
+        postResponse.setTotalElements(posts.getTotalElements());
+        postResponse.setTotalPages(posts.getTotalPages());
+        postResponse.setLast(posts.isLast());
+
+
+
+        return postResponse;
     }
 
     @Override

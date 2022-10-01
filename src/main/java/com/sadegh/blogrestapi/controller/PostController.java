@@ -1,9 +1,8 @@
 package com.sadegh.blogrestapi.controller;
 
 import com.sadegh.blogrestapi.payload.PostDto;
+import com.sadegh.blogrestapi.payload.PostResponse;
 import com.sadegh.blogrestapi.service.PostService;
-import javafx.geometry.Pos;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +29,11 @@ public class PostController {
 
 
     @GetMapping("/posts")
-    public List<PostDto> getAllPosts(Pageable pageable){
+    public PostResponse getAllPosts(
+            @RequestParam(value = "pageNo",defaultValue = "0",required = false) int pageNo,
+            @RequestParam(value = "pageSize",defaultValue = "10",required = false) int pageSize){
 
-        return postService.getAllPosts();
+        return postService.getAllPosts(pageNo,pageSize);
     }
 
 
