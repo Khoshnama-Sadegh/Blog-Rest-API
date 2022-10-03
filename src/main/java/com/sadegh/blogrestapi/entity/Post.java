@@ -1,9 +1,6 @@
 package com.sadegh.blogrestapi.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -13,7 +10,8 @@ import java.util.Set;
 @Entity
 @Table(name = "posts"
         ,uniqueConstraints = {@UniqueConstraint(columnNames = {"title"})})
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Post {

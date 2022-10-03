@@ -9,6 +9,7 @@ import com.sadegh.blogrestapi.payload.PostDto;
 import com.sadegh.blogrestapi.repository.CommentRepository;
 import com.sadegh.blogrestapi.repository.PostRepository;
 import com.sadegh.blogrestapi.service.CommentService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,13 +20,16 @@ import java.util.stream.Collectors;
 @Service
 public class CommentServiceImpl implements CommentService {
 
+    private ModelMapper mapper;
     private CommentRepository commentRepository;
     private PostRepository postRepository;
 
 
-    public CommentServiceImpl(CommentRepository commentRepository,PostRepository postRepository) {
+
+    public CommentServiceImpl(CommentRepository commentRepository,PostRepository postRepository,ModelMapper mapper) {
         this.commentRepository = commentRepository;
         this.postRepository=postRepository;
+        this.mapper=mapper;
     }
 
 
@@ -67,7 +71,7 @@ public class CommentServiceImpl implements CommentService {
 
 
         if(!comment.getPost().getId().equals(post.getId())){
-            throw new BlogApiException("Comments Does not belong to this post",HttpStatus.BAD_REQUEST);
+            throw new BlogApiException(HttpStatus.BAD_REQUEST,"Comments Does not belong to this post");
         }else
             return toDto(comment);
 
@@ -82,7 +86,7 @@ public class CommentServiceImpl implements CommentService {
 
 
         if(!comment.getPost().getId().equals(post.getId())){
-            throw new BlogApiException("Comments Does not belong to this post",HttpStatus.BAD_REQUEST);
+            throw new BlogApiException(HttpStatus.BAD_REQUEST,"Comments Does not belong to this post");
         }
 
 
@@ -106,7 +110,7 @@ public class CommentServiceImpl implements CommentService {
 
 
         if(!comment.getPost().getId().equals(post.getId())){
-            throw new BlogApiException("Comments Does not belong to this post",HttpStatus.BAD_REQUEST);
+            throw new BlogApiException(HttpStatus.BAD_REQUEST,"Comments Does not belong to this post");
         }
 
         commentRepository.delete(comment);
@@ -119,13 +123,7 @@ public class CommentServiceImpl implements CommentService {
     //conversion of dto and entity
 
     private Comment toEntity(CommentDto commentDto){
-        Comment comment=new Comment();
-
-        comment.setId(commentDto.getId());
-        comment.setName(commentDto.getName());
-        comment.setEmail(commentDto.getEmail());
-        comment.setBody(commentDto.getBody());
-
+        Comment comment=mapper.map(commentDto,Comment.class);
         return comment;
     }
 
@@ -134,12 +132,7 @@ public class CommentServiceImpl implements CommentService {
 
     private CommentDto toDto(Comment comment){
 
-        CommentDto commentDto=new CommentDto();
-
-        commentDto.setId(comment.getId());
-        commentDto.setName(comment.getName());
-        commentDto.setEmail(comment.getEmail());
-        commentDto.setBody(comment.getBody());
+        CommentDto commentDto=mapper.map(comment,CommentDto.class);
 
         return commentDto;
     }
