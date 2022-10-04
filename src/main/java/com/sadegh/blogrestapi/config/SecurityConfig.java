@@ -1,5 +1,7 @@
 package com.sadegh.blogrestapi.config;
 
+import com.sadegh.blogrestapi.security.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,11 +22,28 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private CustomUserDetailsService customUserDetailsService;
+
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+
+        auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
+
+
+    }
+
+
+
 
     @Bean
     PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+
+
+
 
 
     @Override
@@ -43,13 +62,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-    @Override
-    @Bean
-    protected UserDetailsService userDetailsService() {
-
-        UserDetails sadegh=User.builder().username("sadegh").password(passwordEncoder().encode("sadegh")).roles("ADMIN").build();
-        UserDetails ali=User.builder().username("ali").password(passwordEncoder().encode("ali")).roles("USER").build();
-
-        return new InMemoryUserDetailsManager(sadegh,ali);
-    }
+//    @Override
+//    @Bean
+//    protected UserDetailsService userDetailsService() {
+//
+//        UserDetails sadegh=User.builder().username("sadegh").password(passwordEncoder().encode("sadegh")).roles("ADMIN").build();
+//        UserDetails ali=User.builder().username("ali").password(passwordEncoder().encode("ali")).roles("USER").build();
+//
+//        return new InMemoryUserDetailsManager(sadegh,ali);
+//    }
 }
