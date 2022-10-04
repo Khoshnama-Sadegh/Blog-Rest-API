@@ -7,6 +7,7 @@ import com.sadegh.blogrestapi.utils.AppConstants;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -22,6 +23,7 @@ public class PostController {
         this.postService = postService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/posts")
     public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto){
 
@@ -50,6 +52,7 @@ public class PostController {
 
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/posts/{postId}")
     public ResponseEntity<PostDto> updatePost(@Valid @RequestBody PostDto postDto,@PathVariable("postId") long id){
 
@@ -59,7 +62,7 @@ public class PostController {
     }
 
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/posts/{postId}")
     public ResponseEntity<String> deletePost(@PathVariable("postId") long id){
 
