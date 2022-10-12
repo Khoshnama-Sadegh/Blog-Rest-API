@@ -2,10 +2,12 @@ package com.sadegh.blogrestapi.controller;
 
 import com.sadegh.blogrestapi.entity.Role;
 import com.sadegh.blogrestapi.entity.User;
+import com.sadegh.blogrestapi.payload.JWTAuthResponse;
 import com.sadegh.blogrestapi.payload.LoginDto;
 import com.sadegh.blogrestapi.payload.SignUpDto;
 import com.sadegh.blogrestapi.repository.RoleRepository;
 import com.sadegh.blogrestapi.repository.UserRepository;
+import com.sadegh.blogrestapi.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,18 +39,22 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtTokenProvider tokenProvider;
+
 
 
     @PostMapping("/signin")
-    public ResponseEntity<String>authenticateUser(@RequestBody LoginDto loginDto){
+    public ResponseEntity<JWTAuthResponse>authenticateUser(@RequestBody LoginDto loginDto){
         Authentication authentication= authenticationManager.
                 authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsernameOrEmail(),loginDto.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return new ResponseEntity<>("User singed-in successfully", HttpStatus.OK);
+        //get token from tokenProviderClass
+        String token=tokenProvider.generateToken(authentication);
 
-
+        return new ResponseEntity<>(new JWTAuthResponse(token),HttpStatus.OK);
 
     }
 
